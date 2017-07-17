@@ -61,7 +61,6 @@ class GenericNode(object):
         obj = cls(**response.json())
         return obj
     def save(self):
-        print("Metodo save llamado")
         if hasattr(self, 'id') and self.id != "" and int(self.id) > 0:
             url = "{}{}/".format(GenericNode.NODE_URLS[self.__class__._node_type], self.id)
             obj_dict = {}
@@ -69,7 +68,6 @@ class GenericNode(object):
                 obj_dict[field] = getattr(self, field)
             response = requests.patch(url, json=obj_dict, auth=AUTH)
             self._build_fields(**response.json())
-            print("Se trata de un elemento ya existente.\nid: {}\nurl: {}\nresponse code: {}".format(self.id, url, response.status_code))
             if response.status_code > 250:
                 print("Response text: {}".format(response.text))
         else:
@@ -78,9 +76,7 @@ class GenericNode(object):
             for field in set(self._visible_fields + self._all_fields):
                 obj_dict[field] = getattr(self, field)
             response = requests.post(url, json=obj_dict, auth=AUTH)
-            print("obj: {}\nresponse: {}".format(obj_dict, response.text))
             self._build_fields(**response.json())
-            print("Se trata de un elemento nuevo.\nNuevo id: {}\nurl: {}\nresponse code: {}".format(self.id, url, response.status_code))
             if response.status_code > 250:
                 print("Response text: {}".format(response.text))
 
@@ -185,7 +181,9 @@ def build_tree(parent_id=None, parent_tk_node=None):
     else:
         request_uri = '{}?parent={}'.format(GenericNode.BASE_NODES_URL, parent_id)
 
-    nodes_json = requests.get(request_uri, auth=AUTH).json().get('results')
+    response = requests.get(request_uri, auth=AUTH)
+    print("Response:\nCode: {}\nText:\n{}".format(response.status_code, response.text))
+    nodes_json = response.json().get('results')
 
     for node_json in nodes_json:
         base_node = GenericNode.retrieve_node(
@@ -278,7 +276,7 @@ style.configure("Treeview", foreground='grey')
 style.configure("Treeview.Heading", foreground='green')
 style.configure('Treeview', rowheight=30)
 
-root.geometry('{}x{}'.format(800, 600))
+root.geometry('{}x{}'.format(500, 600))
 root.resizable(width=False, height=False)
 root.title("ZMS2 Procedures Configuration")
 
@@ -303,13 +301,11 @@ def edit_concrete_node():
     node = popup.node_selection
     EditorWindow(node.concrete_node)
     print("Editando el nodo: {}".format(node.concrete_node))
-    rebuild_entire_tree()
 
 def change_parent():
     node = popup.node_selection
     EditorWindow(node.base_node)
     print("Editando el nodo: {}".format(node.base_node))
-    rebuild_entire_tree()
 
 def add_conditional():
     node = popup.node_selection
@@ -332,7 +328,6 @@ def add_management_entity():
     base_node.save()
     EditorWindow(ManagementEntityNode(base_node=base_node.id))
     print("Add management entity in node: {}".format(node))
-    rebuild_entire_tree()
 
 def add_procedure_description():
     node = popup.node_selection
@@ -344,7 +339,6 @@ def add_procedure_description():
     base_node.save()
     EditorWindow(ProcedureDescriptionNode(base_node=base_node.id))
     print("Add procedure description in node: {}".format(node))
-    rebuild_entire_tree()
 
 def remove_node():
     node = popup.node_selection
@@ -352,12 +346,8 @@ def remove_node():
     node.remove()
     rebuild_entire_tree()
 
-def update_tree():
-    rebuild_entire_tree()
 
-
-
-popup.add_command(label="Refresh", command=update_tree)
+popup.add_command(label="Refresh", command=rebuild_entire_tree)
 popup.add_separator()
 popup.add_command(label="Edit node", command=edit_concrete_node)
 popup.add_command(label="Change parent", command=change_parent)
