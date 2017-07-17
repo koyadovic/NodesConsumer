@@ -7,15 +7,16 @@ import subprocess
 from tkinter import *
 from tkinter import ttk
 
-USER = ''
-PW = ''
-BROWSER = r'/usr/bin/google-chrome'
+import os
+
+USER = os.environ['NODES_CONSUMER_USER']
+PW = os.environ['NODES_CONSUMER_PW']
 
 AUTH = HTTPBasicAuth(username=USER, password=PW)
 
 
 class GenericNode(object):
-    BASE_URL = "http://127.0.0.1:8000/"
+    BASE_URL = os.environ['NODES_CONSUMER_BASE_URL']
     BASE_NODES_URL = "{}api/v1/procedures/nodes/bases/".format(BASE_URL)
     NODE_TYPE_CONDITIONAL = "ConditionalNode"
     NODE_TYPE_MANAGEMENT = "ManagementEntityNode"
