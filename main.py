@@ -260,6 +260,7 @@ class EditorWindow(Toplevel):
             print("Guardandolo, cambio ...")
             self._obj.save()
             rebuild_entire_tree()
+        self.destroy()
 
     def cancel_click(self):
         base_id = getattr(self._obj, 'base_node', None)
@@ -312,14 +313,22 @@ def change_parent():
 
 def add_conditional():
     node = popup.node_selection
-    base_node = BaseNode(parent=node.base_node.id)
+    try:
+        base_id = node.base_node.id
+    except:
+        base_id = None
+    base_node = BaseNode(parent=base_id)
     base_node.save()
     EditorWindow(ConditionalNode(base_node=base_node.id))
     print("Add Conditional in node: {}".format(node))
 
 def add_management_entity():
     node = popup.node_selection
-    base_node = BaseNode(parent=node.base_node.id)
+    try:
+        base_id = node.base_node.id
+    except:
+        base_id = None
+    base_node = BaseNode(parent=base_id)
     base_node.save()
     EditorWindow(ManagementEntityNode(base_node=base_node.id))
     print("Add management entity in node: {}".format(node))
@@ -327,7 +336,11 @@ def add_management_entity():
 
 def add_procedure_description():
     node = popup.node_selection
-    base_node = BaseNode(parent=node.base_node.id)
+    try:
+        base_id = node.base_node.id
+    except:
+        base_id = None
+    base_node = BaseNode(parent=base_id)
     base_node.save()
     EditorWindow(ProcedureDescriptionNode(base_node=base_node.id))
     print("Add procedure description in node: {}".format(node))
