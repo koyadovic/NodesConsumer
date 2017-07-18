@@ -351,7 +351,7 @@ def remove_node():
 popup.add_command(label="Refresh", command=rebuild_entire_tree)
 popup.add_separator()
 popup.add_command(label="Edit node", command=edit_concrete_node)
-popup.add_command(label="Change parent", command=change_parent)
+popup.add_command(label="Edit relation", command=change_parent)
 popup.add_separator()
 popup.add_command(label="Add Conditional", command=add_conditional)
 popup.add_command(label="Add Management Entity", command=add_management_entity)
