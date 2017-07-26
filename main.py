@@ -68,6 +68,7 @@ class GenericNode(object):
             for field in self._all_fields:
                 obj_dict[field] = getattr(self, field)
             response = requests.patch(url, json=obj_dict, auth=AUTH)
+
             self._build_fields(**response.json())
             if response.status_code > 250:
                 print("Response text: {}".format(response.text))
@@ -184,7 +185,7 @@ def build_tree(parent_id=None, parent_tk_node=None):
 
     response = requests.get(request_uri, auth=AUTH)
     print("Response:\nCode: {}\nText:\n{}".format(response.status_code, response.text))
-    nodes_json = response.json().get('results')
+    nodes_json = response.json()
 
     for node_json in nodes_json:
         base_node = GenericNode.retrieve_node(
